@@ -107,11 +107,21 @@
       margin-bottom: 12px;
     }
 
-    .pokemon-emoji {
-      font-size: 7rem;
-      line-height: 1.2;
-      margin: 10px 0;
-      user-select: none;
+    /* 공식 포켓몬 이미지 스타일 */
+    .pokemon-img-container {
+      width: 200px;
+      height: 200px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pokemon-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
     }
 
     .pokemon-name {
@@ -175,7 +185,7 @@
       }
       header h1 { font-size: 1.8rem; }
       header p { font-size: 1rem; }
-      .pokemon-emoji { font-size: 5.5rem; }
+      .pokemon-img-container { width: 160px; height: 160px; }
       .pokemon-name { font-size: 1.6rem; }
       .reason-box { font-size: 1rem; }
       .mbti-btn { font-size: 1.1rem; padding: 14px 6px; }
@@ -214,7 +224,9 @@
     <!-- 결과 화면 -->
     <div class="result-card" id="result-card">
       <div class="pokemon-badge" id="res-mbti">MBTI</div>
-      <div class="pokemon-emoji" id="res-emoji">🐾</div>
+      <div class="pokemon-img-container">
+        <img id="res-img" class="pokemon-img" src="" alt="포켓몬 이미지">
+      </div>
       <div class="pokemon-name" id="res-name">포켓몬 이름</div>
       
       <div class="reason-box" id="res-reason">
@@ -230,101 +242,101 @@
   </div>
 
   <script>
-    // MBTI별 포켓몬 데이터 (16가지)
+    // MBTI별 포켓몬 데이터 (공식 일러스트 ID 포함)
     const pokemonData = {
       ISTJ: {
         name: "거북왕",
-        emoji: "🐢",
+        id: 9,
         reason: "책임감이 강하고 규칙을 철저히 지키는 성격입니다.<br>단단한 껍질처럼 묵묵하고 신뢰할 수 있으며, 방어력과 지휘력이 매우 뛰어납니다.",
         match: "ENFP (이브이)"
       },
       ISFJ: {
         name: "해피너스",
-        emoji: "🥚",
+        id: 242,
         reason: "주변 사람들을 지극정성으로 챙기고 배려하는 마음이 따뜻합니다.<br>상처받은 동료를 치료해주며 언제나 든든한 쉼터가 되어주는 대표적인 수호자입니다.",
         match: "ENTP (팬텀)"
       },
       INFJ: {
         name: "가디안",
-        emoji: "🧚",
+        id: 282,
         reason: "통찰력이 뛰어나고 타인의 감정을 깊게 이해하는 신비로운 매력이 있습니다.<br>트레이너를 지키기 위해 모든 에너지로 소형 블랙홀까지 만드는 강한 직관과 헌신을 가졌습니다.",
         match: "ESTP (윈디)"
       },
       INTJ: {
         name: "뮤츠",
-        emoji: "🔮",
+        id: 150,
         reason: "독립적이고 철저한 전략가 타입으로 철학적 탐구를 즐깁니다.<br>비범한 지능과 강력한 능력을 바탕으로 언제나 한발 앞서 미래를 구상합니다.",
         match: "ESFP (피카츄)"
       },
       ISTP: {
         name: "루카리오",
-        emoji: "🐺",
+        id: 448,
         reason: "조용하지만 필요할 때 압도적인 행동력을 발휘하는 실용주의자입니다.<br>상황을 냉철하게 분석하고 파동을 이용해 단번에 문제를 해결해냅니다.",
         match: "ENFJ (망나뇽)"
       },
       ISFP: {
         name: "잠만보",
-        emoji: "🐻",
+        id: 143,
         reason: "느긋하고 온화하며 삶의 여유와 평화를 즐기는 예술가 타입입니다.<br>남에게 피해 주지 않고 자신만의 페이스대로 편안한 시간을 보내는 것을 가장 좋아합니다.",
         match: "ENTJ (괴력몬)"
       },
       INFP: {
         name: "메타몽",
-        emoji: "🫠",
+        id: 132,
         reason: "상상력이 풍부하고 상대방의 마음을 깊이 이해하고 맞춰주는 능력이 있습니다.<br>말랑말랑한 마음을 가져 무엇으로든 변신할 수 있는 무한한 가능성을 가지고 있습니다.",
         match: "ESTJ (윈디)"
       },
       INTP: {
         name: "고라파덕",
-        emoji: "🦆",
+        id: 54,
         reason: "항상 깊은 생각에 잠겨 있으며 독창적인 아이디어가 넘쳐납니다.<br>머리가 아플 정도로 많은 고민을 하다가 예상치 못한 순간 강력한 능력을 발휘합니다.",
         match: "ESFJ (파이리)"
       },
       ESTP: {
         name: "윈디",
-        emoji: "🐕",
+        id: 59,
         reason: "에너지가 넘치고 상황 판단이 빨라 망설임 없이 현장에 뛰어듭니다.<br>바람처럼 빠르게 달리며 어떤 위기나 모험도 즐겁게 돌파하는 용감한 행동파입니다.",
         match: "INFJ (가디안)"
       },
       ESFP: {
         name: "피카츄",
-        emoji: "⚡",
+        id: 25,
         reason: "톡톡 튀는 매력으로 어디서나 분위기 메이커 역할을 톡톡히 해냅니다.<br>사람들과 어울리는 것을 좋아하며 밝은 에너지로 주위를 환하게 밝혀줍니다.",
         match: "INTJ (뮤츠)"
       },
       ENFP: {
         name: "이브이",
-        emoji: "🦊",
+        id: 133,
         reason: "호기심이 많고 열정적이며 어디로 튈지 모르는 무한한 가능성을 가졌습니다.<br>어떤 환경에서든 다양하게 진화할 수 있는 자율적이고 밝은 모험가입니다.",
         match: "ISTJ (거북왕)"
       },
       ENTP: {
         name: "팬텀",
-        emoji: "👻",
+        id: 94,
         reason: "재치 넘치고 새로운 시도를 두려워하지 않는 장난기 많은 아이디어왕입니다.<br>상식을 뒤엎는 독창적인 방식으로 상대방을 놀라게 만드는 것을 즐깁니다.",
         match: "ISFJ (해피너스)"
       },
       ESTJ: {
-        name: "윈디 (리더)",
-        emoji: "🦁",
+        name: "윈디",
+        id: 59,
         reason: "체계적이고 리더십이 뛰어나 집단을 이끄는 데 탁월한 능력을 발휘합니다.<br>명확한 규칙과 과감한 결정력으로 당면한 임무를 완벽하게 수행합니다.",
         match: "INFP (메타몽)"
       },
       ESFJ: {
         name: "파이리",
-        emoji: "🔥",
+        id: 4,
         reason: "친절하고 사교적이며 주변 사람들과 조화를 이루는 것을 중요하게 생각합니다.<br>꼬리의 꼬마 불꽃처럼 따뜻한 마음으로 모두에게 활력을 북돋아줍니다.",
         match: "INTP (고라파덕)"
       },
       ENFJ: {
         name: "망나뇽",
-        emoji: "🐉",
+        id: 149,
         reason: "따뜻한 품성과 카리스마를 동시에 갖춘 정이 많은 리더입니다.<br>넓은 바다를 비행하며 도움이 필요한 이들을 진심을 다해 도와주는 수호신입니다.",
         match: "ISTP (루카리오)"
       },
       ENTJ: {
         name: "괴력몬",
-        emoji: "💪",
+        id: 68,
         reason: "목표가 정해지면 거침없는 추진력과 강력한 실행력으로 달성해냅니다.<br>4개의 팔로 모든 일과 장애물을 신속하고 완벽하게 처리하는 정복자입니다.",
         match: "ISFP (잠만보)"
       }
@@ -334,9 +346,13 @@
     function showResult(mbti) {
       const data = pokemonData[mbti];
 
+      // 공식 Official Artwork 이미지 URL 생성 (PokeAPI CDN 사용)
+      const officialImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`;
+
       // UI 요소 업데이트
       document.getElementById('res-mbti').innerText = mbti + " 유형";
-      document.getElementById('res-emoji').innerText = data.emoji;
+      document.getElementById('res-img').src = officialImageUrl;
+      document.getElementById('res-img').alt = data.name;
       document.getElementById('res-name').innerText = data.name;
       document.getElementById('res-reason').innerHTML = data.reason;
       document.getElementById('res-match').innerText = data.match;
